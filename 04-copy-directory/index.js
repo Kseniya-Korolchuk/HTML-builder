@@ -1,24 +1,19 @@
-const fs = require('fs');
+const {rm, mkdir, readdir, copyFile} = require('fs/promises');
 const path = require('path');
 const srcPath = path.join(__dirname, 'files');
-const srcDest = path.join(__dirname, 'files-copy');
+const destPath = path.join(__dirname, 'files-copy');
 
-fs.mkdir(srcDest, {recursive: true}, function(){});
-fs.stat(srcDest, function(err) {
-  if (!err) {
-    fs.readdir(srcDest, function (err, items) {
-      for (let i = 0; i < items.length; i++) {
-        fs.unlink(path.join(srcDest, items[i]), function(err){
-          if (err) console.log(err);
-          console.log(`файл ${items[i]} удален`);  
-        });
-      }
-    });
+async function copying() {
+  const files = await readdir(srcPath, {withFileTypes: true},(err, items) => {});
+  for (const file of files) {
+    copyFile(path.join(srcPath, file.name), path.join(destPath, file.name));
   }
-  fs.readdir(srcPath, function (err, items) {
-    for (let i = 0; i < items.length; i++) {
-      fs.copyFile(path.join(srcPath,items[i]), path.join(srcDest,items[i]), function(){});
-      console.log(`файл ${items[i]} скопирован`);    
-    }
-  });
-});
+}
+
+async function copyFolder() {
+  await rm(destPath, {recursive: true, force: true});
+  await mkdir(destPath, {recursive: true});
+  copying();
+}
+
+copyFolder();
