@@ -56,7 +56,7 @@ async function copyAssets(src, dest) {
       }
     }
     else {
-      await copyFile(path.join(src, entity.name), path.join(dest, entity.name));
+      await copyFile(path.join(src, `${entity.name}`), path.join(dest, `${entity.name}`));
     }
   }
 }
