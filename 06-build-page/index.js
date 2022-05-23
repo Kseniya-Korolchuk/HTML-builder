@@ -34,7 +34,7 @@ async function fillHTML(src, dest, parts) {
 }
 
 async function buildCSS(src, dest) {
-  let styles = await readdir(src, {withFileTypes: true}, (err, files) => {});
+  let styles = await readdir(src, {withFileTypes: true});
   let str = '';
   for (let i = 0; i < styles.length; i++) {
     if (styles[i].name.slice(styles[i].name.length - 4) === '.css') {
