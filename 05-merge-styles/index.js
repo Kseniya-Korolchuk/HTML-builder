@@ -1,32 +1,23 @@
-const fs = require('fs');
+const {readdir, readFile, appendFile, rm, mkdir} = require('fs/promises');
 const path = require('path');
 const srcPath = path.join(__dirname, 'styles');
-const srcDest = path.resolve(__dirname, 'project-dist');
+const destPath = path.join(__dirname, 'project-dist');
 
-fs.mkdir(srcDest, {recursive: true}, function(){
+merge();
 
-  fs.stat(srcDest, function(err){
-    if (!err) {
-      fs.readdir(srcDest, function (err, items) {
-        for (let i = 0; i < items.length; i++) {
-          fs.unlink(path.join(srcDest, items[i]), function(err){
-            if (err) console.log(err);
-          });
-        }
-      });
+async function merge() {
+  await rm(destPath, {recursive: true, force: true});
+  await mkdir(destPath, {recursive: true});
+  await mergeStyles(srcPath, destPath);
+}
+
+async function mergeStyles(src, dest) {
+  const items = await readdir(src, { withFileTypes: true });
+  let str = '';
+  for await (let item of items) {
+    if (path.extname(path.join(src, `${item.name}`)) === '.css' && item.isFile()) {
+      str = await readFile(path.join(src, `${item.name}`), 'utf-8');
+      await appendFile(path.join(dest, 'bundle.css'), str);
     }
-    
-    fs.readdir(srcPath, { withFileTypes: true }, function (err, items) {
-      for (let i = 0; i < items.length; i++) {  
-        fs.readFile(path.join(srcPath, items[i].name), 'utf-8', function(error, data){
-          const parsedPath = path.parse(path.join(srcPath, items[i].name));
-          if (parsedPath.ext === '.css') {
-            fs.appendFile(path.join(srcDest, 'bundle.css'), data, function(error){
-              if (error) throw error;
-            });
-          }
-        });
-      }
-    });
-  });
-});
+  }
+}
