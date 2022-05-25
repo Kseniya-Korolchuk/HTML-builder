@@ -1,4 +1,5 @@
-const {readdir, readFile, appendFile, rm, mkdir} = require('fs/promises');
+const {unlink } = require('fs');
+const {readdir, readFile, appendFile} = require('fs/promises');
 const path = require('path');
 const srcPath = path.join(__dirname, 'styles');
 const destPath = path.join(__dirname, 'project-dist');
@@ -6,9 +7,8 @@ const destPath = path.join(__dirname, 'project-dist');
 merge();
 
 async function merge() {
-  await rm(destPath, {recursive: true, force: true});
-  await mkdir(destPath, {recursive: true});
-  await mergeStyles(srcPath, destPath);
+  unlink(path.join(destPath, 'bundle.css'), () => {});
+  mergeStyles(srcPath, destPath);
 }
 
 async function mergeStyles(src, dest) {
