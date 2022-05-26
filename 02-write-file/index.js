@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const dirName = path.join(__dirname,'text.txt');
-const readline = require('node:readline');
-const {stdin, stdout} = require('node:process');
+const readline = require('readline');
+const {stdin, stdout} = require('process');
 const rl = readline.createInterface({input: stdin, output: stdout});
 let writeStream = fs.createWriteStream(dirName);
 
@@ -14,7 +14,7 @@ rl.on('SIGINT', () => {
 });
 
 rl.on('line', (line) => {
-  if (line === 'exit' || line === 'Exit' || line === 'EXIT') {
+  if (line.toLowerCase() === 'exit') {
     console.log('Have a nice cross-check, bye!');
     rl.close();
   } else {
